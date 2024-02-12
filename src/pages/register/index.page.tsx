@@ -32,16 +32,15 @@ export default function Register() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerFormSchema),
-    defaultValues: {
-      username: 'bla',
-    },
   })
 
   const router = useRouter()
-  if (router.query.username) {
-    setValue('username', String(router.query.username))
-  }
-  useEffect(() => {}, [router.query?.username])
+
+  useEffect(() => {
+    if (router.query.username) {
+      setValue('username', String(router.query.username))
+    }
+  }, [router.query?.username, setValue])
 
   async function handleRegister(data: RegisterFormData) {
     try {
@@ -49,6 +48,8 @@ export default function Register() {
         name: data.name,
         username: data.username,
       })
+
+      await router.push('/register/connect-calendar')
     } catch (error) {
       if (error instanceof AxiosError && error.response?.data.message) {
         return alert(error.response.data.message)
